@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const PostcardSchema = mongoose.Schema({
+const postcardSchema = mongoose.Schema({
   name: {
     type: String,
     require: true,
@@ -9,8 +9,16 @@ const PostcardSchema = mongoose.Schema({
     type: String,
     require: false,
   },
+  photos: {
+    type: [String],
+    require: false,
+  },
+  folderId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Folder",
+  },
 });
 
-const PostcardModel = mongoose.model("postcards", PostcardSchema);
+const Postcard = mongoose.model("postcards", postcardSchema);
 
-export default PostcardModel;
+export default postcardModel;
