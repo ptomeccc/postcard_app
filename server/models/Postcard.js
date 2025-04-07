@@ -19,6 +19,6 @@ const postcardSchema = mongoose.Schema({
   },
 });
 
-const Postcard = mongoose.model("postcards", postcardSchema);
+const Postcard = mongoose.model("Postcard", postcardSchema);
 
-export default postcardModel;
+export default Postcard;

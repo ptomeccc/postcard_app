@@ -3,37 +3,28 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
-import PpstcardModel from "./models/Postcards.js";
+import cookieParser from "cookie-parser";
+import authRoute from "./Routes/AuthRoute.js";
+import Postcard from "./Models/Postcard.js";
+
 const app = express();
 
 dotenv.config({ path: "./config.env" });
-
-app.use(cors());
-app.use(express.json());
+const PORT = process.env.PORT || 4000;
 
 connectDB(); // Database connection
 
-app.post("/addpostcard", async (req, res) => {
-  const name = req.body.name;
-  const description = req.body.description;
+app.use(
+  cors({
+    origin: ["http://localhost:4000"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
+app.use(cookieParser());
+app.use(express.json());
+app.use("/", authRoute);
 
-  const postcard = new postcardModel({
-    name: name,
-    description: description,
-  });
-  await postcard.save();
-  res.send("Success");
-});
-
-app.get("/allpostcards", async (req, res) => {
-  try {
-    const result = await postcardModel.find({});
-    res.send(result);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.listen(3001, () => {
-  console.log(`Server listening -> http://localhost:3001`);
+app.listen(PORT, () => {
+  console.log(`Server is listening on port ${PORT}`);
 });

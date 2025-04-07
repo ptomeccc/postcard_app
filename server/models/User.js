@@ -17,13 +17,10 @@ const userSchema = mongoose.Schema({
   folders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Folder" }],
 });
 
-userSchema.pre("save", async function (next) {
-  if ((this.isNew || this, isModified("password"))) {
-    this.password = await bcrypt.hash(this.password, 10);
-  }
-  next();
+userSchema.pre("save", async function () {
+  this.password = await bcrypt.hash(this.password, 12);
 });
 
 const User = mongoose.model("User", userSchema);
 
-export default userSchema;
+export default User;
