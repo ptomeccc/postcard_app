@@ -3,15 +3,19 @@ import mongoose from "mongoose";
 const postcardSchema = mongoose.Schema({
   name: {
     type: String,
-    require: true,
+    required: true,
   },
   description: {
     type: String,
-    require: false,
+    required: false,
   },
   photos: {
     type: [String],
     require: false,
+  },
+  addedAt: {
+    type: Date,
+    default: Date.now,
   },
   folderId: {
     type: mongoose.Schema.Types.ObjectId,

@@ -1,9 +1,9 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const folderSchema = mongoose.Schema({
   name: {
     type: String,
-    require: true,
+    required: true,
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
