@@ -65,18 +65,37 @@ const AllFolders = () => {
       setIsCreating(false);
     }
   };
+  const deleteFolder = async (folderId) => {
+    if (!window.confirm("Czy na pewno chcesz usunąć ten folder?")) {
+      return;
+    }
+
+    setError(null);
+    try {
+      await axios.delete(`http://localhost:4000/folder/${folderId}`, {
+        withCredentials: true,
+      });
+      setFolders(folders.filter((folder) => folder._id !== folderId));
+    } catch (error) {
+      console.error("Błąd usuwania folderu:", error);
+      const errorMessage =
+        error.response?.data?.message ||
+        "Wystąpił błąd podczas usuwania folderu";
+      setError(errorMessage);
+    }
+  };
 
   if (loading) {
     return <p>Ładowanie folderów...</p>;
   }
-
-  if (error) {
-    return <p>Wystąpił błąd podczas ładowania folderów: {error}</p>;
-  }
+  const ErrorMessage = () =>
+    error && <div className="error-message">{error}</div>;
   return (
     <>
+      {" "}
       <div className="folders-header">
         <h4>Wszystkie foldery użytkownika {username}</h4>
+        {error && <div className="error-message">{error}</div>}
         <div className="create-folder-form">
           <input
             type="text"
@@ -96,11 +115,23 @@ const AllFolders = () => {
       <div className="folders-container">
         {folders.length > 0 ? (
           <>
+            {" "}
             {folders.map((folder) => (
               <div
                 key={folder._id}
-                onClick={() => navigate(`/folder/${folder._id}`)}
-                className="folder">
+                className="folder"
+                onClick={(e) => {
+                  // Only navigate if we didn't click the delete button
+                  if (!e.target.closest(".delete-folder-button")) {
+                    navigate(`/folder/${folder._id}`);
+                  }
+                }}>
+                {" "}
+                <button
+                  className="delete-folder-button"
+                  onClick={() => deleteFolder(folder._id)}>
+                  Usuń
+                </button>
                 <h3>{folder.name}</h3>
                 <p>0 pocztówek</p>
               </div>

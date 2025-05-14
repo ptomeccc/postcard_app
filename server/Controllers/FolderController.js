@@ -49,3 +49,36 @@ export const getFolderById = async (req, res) => {
     res.status(500).json({ message: "Błąd podczas pobiernia folderu:", error });
   }
 };
+
+/* Create deleteFolder function */
+export const deleteFolder = async (req, res) => {
+  try {
+    const folderId = req.params.id;
+    const userId = req.userId; // Find the folder by ID and userId
+    const folder = await Folder.findOne({ _id: folderId, userId });
+
+    if (!folder) {
+      return res.status(404).json({ message: "Folder nie został znaleziony." });
+    }
+
+    // Check if folder has any postcards
+    const postcardCount = await Postcard.countDocuments({
+      folderId: folder._id,
+    });
+
+    if (postcardCount > 0) {
+      return res.status(400).json({
+        message:
+          "Nie można usunąć folderu zawierającego pocztówki. Usuń najpierw wszystkie pocztówki z folderu.",
+      });
+    }
+
+    // Delete the folder
+    await Folder.deleteOne({ _id: folderId });
+
+    res.status(200).json({ message: "Folder został usunięty." });
+  } catch (error) {
+    console.error("Błąd przy usuwaniu folderu:", error);
+    res.status(500).json({ message: "Błąd podczas usuwania folderu:", error });
+  }
+};
