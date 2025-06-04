@@ -50,14 +50,19 @@ const Folder = () => {
     };
     fetchFolders();
   }, []);
-
   const handleAddPostcard = async (e) => {
     e.preventDefault();
 
     try {
-      const imageUrls = await uploadImagesToCloudinary(
-        newPostcard.photos || []
-      );
+      if (!newPostcard.photos || newPostcard.photos.length === 0) {
+        throw new Error("Please select at least one photo");
+      }
+
+      const imageUrls = await uploadImagesToCloudinary(newPostcard.photos);
+
+      if (!imageUrls || imageUrls.length === 0) {
+        throw new Error("Failed to upload images");
+      }
 
       const postcardData = {
         name: newPostcard.name,
@@ -82,6 +87,7 @@ const Folder = () => {
       setIsModalOpen(false);
     } catch (error) {
       console.error("Błąd dodawania pocztówki:", error);
+      alert(error.message || "Wystąpił błąd podczas dodawania pocztówki");
     }
   };
 
