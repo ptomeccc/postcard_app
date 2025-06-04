@@ -32,7 +32,7 @@
 
 .folder h3 {
   color: #2c3e50;
-  margin: 0 0 0.5rem 0;
+  margin: 0.5rem 0 0.5rem 0;
   font-size: 1.2rem;
 }
 
@@ -42,29 +42,48 @@
   font-size: 0.9rem;
 }
 
-.delete-folder-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
+.folder-action-button {
   padding: 0.5rem;
-  background-color: #ef4444;
-  color: white;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.9rem;
   transition: all 0.3s ease;
-  opacity: 0;
-  z-index: 2;
+  color: white;
 }
 
-.folder:hover .delete-folder-button {
-  opacity: 1;
+.edit-folder-button {
+  background-color: #3b82f6;
+}
+
+.edit-folder-button:hover {
+  background-color: #2563eb;
+  transform: scale(1.05);
+}
+
+.delete-folder-button {
+  background-color: #ef4444;
 }
 
 .delete-folder-button:hover {
   background-color: #dc2626;
   transform: scale(1.05);
+}
+
+.folder-actions {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.folder:hover .folder-actions {
+  opacity: 1;
 }
 
 .folders-header {
@@ -139,6 +158,93 @@
   max-width: 600px;
   text-align: center;
   animation: fadeIn 0.3s ease;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  min-width: 300px;
+  max-width: 500px;
+  animation: modalAppear 0.3s ease;
+}
+
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-content h2 {
+  margin: 0 0 1.5rem 0;
+  color: #1a202c;
+  font-size: 1.5rem;
+}
+
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal-content input {
+  padding: 0.75rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  width: 100%;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.modal-buttons button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-buttons button:first-child {
+  background-color: #e5e7eb;
+  color: #4b5563;
+}
+
+.modal-buttons button:first-child:hover {
+  background-color: #d1d5db;
+}
+
+.modal-buttons button:last-child {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.modal-buttons button:last-child:hover {
+  background-color: #2563eb;
 }
 
 @keyframes fadeIn {

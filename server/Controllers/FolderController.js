@@ -82,3 +82,32 @@ export const deleteFolder = async (req, res) => {
     res.status(500).json({ message: "Błąd podczas usuwania folderu:", error });
   }
 };
+
+export const editFolder = async (req, res) => {
+  try {
+    const { folderId, name } = req.body;
+    const userId = req.userId;
+
+    if (!name || !name.trim()) {
+      return res
+        .status(400)
+        .json({ message: "Nazwa folderu nie może być pusta." });
+    }
+
+    const folder = await Folder.findOne({ _id: folderId, userId });
+
+    if (!folder) {
+      return res.status(404).json({ message: "Folder nie został znaleziony." });
+    }
+
+    folder.name = name.trim();
+    await folder.save();
+
+    res
+      .status(200)
+      .json({ message: "Nazwa folderu została zmieniona.", folder });
+  } catch (error) {
+    console.error("Błąd przy edycji folderu:", error);
+    res.status(500).json({ message: "Błąd podczas edycji folderu", error });
+  }
+};

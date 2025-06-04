@@ -10,6 +10,9 @@ const AllFolders = () => {
   const [error, setError] = useState(null);
   const [newFolderName, setNewFolderName] = useState("");
   const [isCreating, setIsCreating] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editFolderId, setEditFolderId] = useState(null);
+  const [editFolderName, setEditFolderName] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -85,6 +88,50 @@ const AllFolders = () => {
     }
   };
 
+  const editFolder = async (e) => {
+    e.preventDefault();
+    if (!editFolderName.trim()) {
+      setError("Nazwa folderu nie może być pusta");
+      return;
+    }
+
+    setError(null);
+    try {
+      const response = await axios.put(
+        "http://localhost:4000/editfolder",
+        {
+          folderId: editFolderId,
+          name: editFolderName.trim(),
+        },
+        { withCredentials: true }
+      );
+
+      setFolders(
+        folders.map((folder) =>
+          folder._id === editFolderId
+            ? { ...folder, name: editFolderName.trim() }
+            : folder
+        )
+      );
+
+      setEditModalOpen(false);
+      setEditFolderId(null);
+      setEditFolderName("");
+    } catch (error) {
+      console.error("Błąd edycji folderu:", error);
+      setError(
+        error.response?.data?.message || "Wystąpił błąd podczas edycji folderu"
+      );
+    }
+  };
+
+  const openEditModal = (folder, e) => {
+    e.stopPropagation();
+    setEditFolderId(folder._id);
+    setEditFolderName(folder.name);
+    setEditModalOpen(true);
+  };
+
   if (loading) {
     return <p>Ładowanie folderów...</p>;
   }
@@ -121,17 +168,25 @@ const AllFolders = () => {
                 key={folder._id}
                 className="folder"
                 onClick={(e) => {
-                  // Only navigate if we didn't click the delete button
-                  if (!e.target.closest(".delete-folder-button")) {
+                  if (!e.target.closest(".folder-action-button")) {
                     navigate(`/folder/${folder._id}`);
                   }
                 }}>
-                {" "}
-                <button
-                  className="delete-folder-button"
-                  onClick={() => deleteFolder(folder._id)}>
-                  Usuń
-                </button>
+                <div className="folder-actions">
+                  <button
+                    className="folder-action-button edit-folder-button"
+                    onClick={(e) => openEditModal(folder, e)}>
+                    Edytuj
+                  </button>
+                  <button
+                    className="folder-action-button delete-folder-button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteFolder(folder._id);
+                    }}>
+                    Usuń
+                  </button>
+                </div>
                 <h3>{folder.name}</h3>
                 <p>0 pocztówek</p>
               </div>
@@ -141,6 +196,28 @@ const AllFolders = () => {
           <p>Brak folderów.</p>
         )}
       </div>
+      {editModalOpen && (
+        <div className="modal-overlay" onClick={() => setEditModalOpen(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>Edytuj nazwę folderu</h2>
+            <form onSubmit={editFolder}>
+              <input
+                type="text"
+                value={editFolderName}
+                onChange={(e) => setEditFolderName(e.target.value)}
+                placeholder="Nowa nazwa folderu"
+                autoFocus
+              />
+              <div className="modal-buttons">
+                <button type="button" onClick={() => setEditModalOpen(false)}>
+                  Anuluj
+                </button>
+                <button type="submit">Zapisz</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 };
