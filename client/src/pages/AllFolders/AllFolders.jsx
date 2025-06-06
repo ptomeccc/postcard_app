@@ -94,10 +94,9 @@ const AllFolders = () => {
       setError("Nazwa folderu nie może być pusta");
       return;
     }
-
     setError(null);
     try {
-      const response = await axios.put(
+      await axios.put(
         "http://localhost:4000/editfolder",
         {
           folderId: editFolderId,
@@ -131,12 +130,9 @@ const AllFolders = () => {
     setEditFolderName(folder.name);
     setEditModalOpen(true);
   };
-
   if (loading) {
     return <p>Ładowanie folderów...</p>;
   }
-  const ErrorMessage = () =>
-    error && <div className="error-message">{error}</div>;
   return (
     <>
       {" "}

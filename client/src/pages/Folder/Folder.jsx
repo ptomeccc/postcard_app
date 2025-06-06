@@ -49,7 +49,7 @@ const Folder = () => {
       }
     };
     fetchFolders();
-  }, []);
+  }, [id]); // Add id to dependency array
   const handleAddPostcard = async (e) => {
     e.preventDefault();
 
@@ -57,12 +57,13 @@ const Folder = () => {
       if (!newPostcard.photos || newPostcard.photos.length === 0) {
         throw new Error("Please select at least one photo");
       }
-
+      console.log("Attempting to upload photos:", newPostcard.photos);
       const imageUrls = await uploadImagesToCloudinary(newPostcard.photos);
 
       if (!imageUrls || imageUrls.length === 0) {
-        throw new Error("Failed to upload images");
+        throw new Error("Failed to upload images to Cloudinary");
       }
+      console.log("Successfully uploaded images:", imageUrls);
 
       const postcardData = {
         name: newPostcard.name,

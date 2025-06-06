@@ -8,13 +8,19 @@ export const uploadImagesToCloudinary = async (photos) => {
       throw new Error("No photo provided");
     }
 
-    const formData = new FormData();
-    formData.append("file", photo);
-
-    if (!cloudinaryConfig.uploadPreset || !cloudinaryConfig.cloudName) {
-      throw new Error("Missing Cloudinary configuration");
+    if (
+      !cloudinaryConfig ||
+      !cloudinaryConfig.cloudName ||
+      !cloudinaryConfig.uploadPreset
+    ) {
+      console.error("Current cloudinaryConfig:", cloudinaryConfig);
+      throw new Error(
+        "Missing Cloudinary configuration. Please check your cloudinaryConfig.js file."
+      );
     }
 
+    const formData = new FormData();
+    formData.append("file", photo);
     formData.append("upload_preset", cloudinaryConfig.uploadPreset);
     formData.append("folder", cloudinaryConfig.folder);
 

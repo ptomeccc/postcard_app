@@ -1,5 +1,5 @@
 export const cloudinaryConfig = {
-  cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME,
-  uploadPreset: import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET,
-  folder: import.meta.env.VITE_CLOUDINARY_FOLDER,
+  cloudName: process.env.REACT_APP_CLOUDINARY_CLOUD_NAME,
+  uploadPreset: process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET,
+  folder: process.env.REACT_APP_CLOUDINARY_FOLDER,
 };
