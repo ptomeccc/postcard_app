@@ -19,6 +19,8 @@ const Folder = () => {
     description: "",
     photos: [],
   });
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingPostcard, setEditingPostcard] = useState(null);
 
   useEffect(() => {
     const fetchFolders = async () => {
@@ -92,6 +94,67 @@ const Folder = () => {
     }
   };
 
+  const handleEditPostcard = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.put(
+        `http://localhost:4000/postcard/${editingPostcard._id}`,
+        {
+          name: editingPostcard.name,
+          description: editingPostcard.description,
+        },
+        { withCredentials: true }
+      );
+
+      setPostcards((prev) =>
+        prev.map((card) =>
+          card._id === editingPostcard._id
+            ? {
+                ...card,
+                name: editingPostcard.name,
+                description: editingPostcard.description,
+              }
+            : card
+        )
+      );
+
+      setEditModalOpen(false);
+      setEditingPostcard(null);
+    } catch (error) {
+      console.error("Błąd edycji pocztówki:", error);
+      alert(
+        error.response?.data?.message ||
+          "Wystąpił błąd podczas edycji pocztówki"
+      );
+    }
+  };
+
+  const handleDeletePostcard = async (postcardId) => {
+    if (!window.confirm("Czy na pewno chcesz usunąć tę pocztówkę?")) {
+      return;
+    }
+
+    try {
+      await axios.delete(`http://localhost:4000/postcard/${postcardId}`, {
+        withCredentials: true,
+      });
+
+      setPostcards((prev) => prev.filter((card) => card._id !== postcardId));
+    } catch (error) {
+      console.error("Błąd usuwania pocztówki:", error);
+      alert(
+        error.response?.data?.message ||
+          "Wystąpił błąd podczas usuwania pocztówki"
+      );
+    }
+  };
+
+  const openEditModal = (card) => {
+    setEditingPostcard({ ...card });
+    setEditModalOpen(true);
+  };
+
   if (loading) {
     return <p>Ładowanie folderu...</p>;
   }
@@ -112,6 +175,20 @@ const Folder = () => {
         <div className="postcard-list">
           {postcards.map((card, index) => (
             <div className="postcard" key={index}>
+              {username && (
+                <div className="postcard-actions">
+                  <button
+                    className="postcard-action-button edit-button"
+                    onClick={() => openEditModal(card)}>
+                    Edytuj
+                  </button>
+                  <button
+                    className="postcard-action-button delete-button"
+                    onClick={() => handleDeletePostcard(card._id)}>
+                    Usuń
+                  </button>
+                </div>
+              )}
               <h3>{card.name}</h3>
               <p>{card.description}</p>
               {card.photos.length > 0 && (
@@ -206,6 +283,83 @@ const Folder = () => {
                 <button type="submit">Dodaj</button>
               </form>
               <button onClick={() => setIsModalOpen(false)}>Anuluj</button>
+            </div>
+          </div>
+        )}
+
+        {editModalOpen && editingPostcard && (
+          <div
+            className="modal-backdrop"
+            onClick={() => setEditModalOpen(false)}>
+            <div className="modal" onClick={(e) => e.stopPropagation()}>
+              <h2>Edytuj pocztówkę</h2>
+              <form onSubmit={handleEditPostcard}>
+                <input
+                  type="text"
+                  placeholder="Nazwa"
+                  value={editingPostcard.name}
+                  onChange={(e) =>
+                    setEditingPostcard({
+                      ...editingPostcard,
+                      name: e.target.value,
+                    })
+                  }
+                  required
+                />
+                <textarea
+                  placeholder="Treść"
+                  value={editingPostcard.description}
+                  onChange={(e) =>
+                    setEditingPostcard({
+                      ...editingPostcard,
+                      description: e.target.value,
+                    })
+                  }
+                  required></textarea>
+                <button type="submit">Zapisz zmiany</button>
+              </form>
+              <button onClick={() => setEditModalOpen(false)}>Anuluj</button>
+            </div>
+          </div>
+        )}
+
+        {editModalOpen && editingPostcard && (
+          <div
+            className="modal-backdrop"
+            onClick={() => setEditModalOpen(false)}>
+            <div className="modal" onClick={(e) => e.stopPropagation()}>
+              <h2>Edytuj pocztówkę</h2>
+              <form onSubmit={handleEditPostcard}>
+                <input
+                  type="text"
+                  placeholder="Nazwa"
+                  value={editingPostcard.name}
+                  onChange={(e) =>
+                    setEditingPostcard((prev) => ({
+                      ...prev,
+                      name: e.target.value,
+                    }))
+                  }
+                  required
+                />
+                <textarea
+                  placeholder="Treść"
+                  value={editingPostcard.description}
+                  onChange={(e) =>
+                    setEditingPostcard((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
+                  required
+                />
+                <div className="modal-buttons">
+                  <button type="button" onClick={() => setEditModalOpen(false)}>
+                    Anuluj
+                  </button>
+                  <button type="submit">Zapisz</button>
+                </div>
+              </form>
             </div>
           </div>
         )}
